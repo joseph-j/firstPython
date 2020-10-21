@@ -27,55 +27,24 @@
 # NOTE: You might need to change the 'address = 11' line below to match
 #   the device number of your Jrk.
 
-from smbus2 import SMBus, i2c_msg
+import time
+import smbus
 
+i2c_ch = 1
 
-class JrkG2I2C(object):
-    def __init__(self, bus, address):
-        self.bus = bus
-        self.address = address
+# TMP102 address on the I2C bus
+i2c_address = 0x08
 
-    # Sets the target.  For more information about what this command does,
-    # see the "Set Target" command in the "Command reference" section of
-    # the Jrk G2 user's guide.
-    def set_target(self, target):
-        command = [0xC0 + (target & 0x1F), (target >> 5) & 0x7F]
-        write = i2c_msg.write(self.address, command)
-        self.bus.i2c_rdwr(write)
+# Register addresses
+reg_temp = 0x00
+reg_config = 0x01
 
-    # Gets one or more variables from the Jrk (without clearing them).
-    # Returns a list of byte values (integers between 0 and 255).
-    def get_variables(self, offset, length):
-        write = i2c_msg.write(self.address, [0xE5, offset])
-        read = i2c_msg.read(self.address, length)
-        self.bus.i2c_rdwr(write, read)
-        return list(read)
+# Initialize I2C (SMBus)
+bus = smbus.SMBus(i2c_ch)
 
-    # Gets the Target variable from the Jrk.
-    def get_target(self):
-        b = self.get_variables(0x02, 2)
-        return b[0] + 256 * b[1]
+# Send write bit
+bus.write_i2c_block_data(i2c_address, reg_config, val)
 
-    # Gets the Feedback variable from the Jrk.
-    def get_feedback(self):
-        b = self.get_variables(0x04, 2)
-        return b[0] + 256 * b[1]
-
-
-# Open a handle to "/dev/i2c-3", representing the I2C bus.
-bus = SMBus(1)
-
-# Select the I2C address of the Jrk (the device number).
-address = 8
-
-jrk = JrkG2I2C(bus, address)
-
-feedback = jrk.get_feedback()
-print("Feedback is {}.".format(feedback))
-
-target = jrk.get_target()
-print("Target is {}.".format(target))
-
-new_target = 2248 if target < 2048 else 1848
-print("Setting target to {}.".format(new_target))
-jrk.set_target(new_target)
+# Read CONFIG to verify that we changed it
+val = bus.read_i2c_block_data(i2c_address, reg_config, 2)
+print("msg:", val)
