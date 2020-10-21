@@ -16,18 +16,7 @@
 #def updateChannel (ch)
 #    avgList = []
 
-# Uses the smbus2 library to send and receive data from a Jrk G2.
-# Works on Linux with either Python 2 or Python 3.
-#
-# NOTE: The Jrk's input mode must be "Serial / I2C / USB".
-# NOTE: For reliable operation on a Raspberry Pi, enable the i2c-gpio
-#   overlay and use the I2C device it provides (usually /dev/i2c-3).
-# NOTE: You might nee to change the 'SMBus(3)' line below to specify the
-#   correct I2C device.
-# NOTE: You might need to change the 'address = 11' line below to match
-#   the device number of your Jrk.
-
-import time
+#import time
 import smbus
 
 i2c_ch = 1
@@ -42,9 +31,11 @@ reg_config = 0x01
 # Initialize I2C (SMBus)
 bus = smbus.SMBus(i2c_ch)
 
+# Initialize msg list
+val = [0] * 10
 # Send write bit
 bus.write_i2c_block_data(i2c_address, reg_config, val)
 
 # Read CONFIG to verify that we changed it
-val = bus.read_i2c_block_data(i2c_address, reg_config, 2)
+val = bus.read_i2c_block_data(i2c_address, reg_config, 10)
 print("msg:", val)
