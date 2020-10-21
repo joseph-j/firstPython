@@ -1,20 +1,4 @@
-#main run module
-#update channel
-#   check voltage1
-#   update list1
-#   compare former/latter avg
-#...2,3,4
-#sum delta averages
-#if sum delta > XX, comb thru to find which
-#save out peak waveform to file
-#repeat
-###
-#numChannel = 4
-#rollingAvg = 20
-#def readVoltage (ch)
-    #readIO
-#def updateChannel (ch)
-#    avgList = []
+
 
 #import time
 import smbus
@@ -22,7 +6,7 @@ import smbus
 i2c_ch = 1
 
 # TMP102 address on the I2C bus
-i2c_address = 0x08
+i2c_address = 0x90
 
 # Register addresses
 reg_temp = 0x00
