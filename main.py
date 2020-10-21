@@ -63,10 +63,10 @@ class JrkG2I2C(object):
 
 
 # Open a handle to "/dev/i2c-3", representing the I2C bus.
-bus = SMBus(3)
+bus = SMBus(1)
 
 # Select the I2C address of the Jrk (the device number).
-address = 11
+address = 8
 
 jrk = JrkG2I2C(bus, address)
 
