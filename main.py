@@ -13,26 +13,29 @@ reg_conv = 0x00
 reg_config = 0x01
 
 #config msg
-config = [0,0,0,0,0,0,0,0,1,1,1,0,0,0,0]
-
+config_byte1 = 0
+config_byte2 = 224
+config_block = [0x00, 0x00, 0xe0]
 # Initialize I2C (SMBus)
 bus = smbus.SMBus(i2c_ch)
 
 # Initialize msg list
-val = [0] * 16
+val = [0] * 3
 
 # Send write bit
-bus.write_byte_data(i2c_address, 0, config)
-
+bus.write_byte_data(i2c_address, 0, reg_config)
+print(bus.read_i2c_block_data(i2c_address, 0, 16))
+#bus.write_i2c_block_data(i2c_address, 0, config_block)
+bus.write_byte_data(i2c_address, 0, config_byte2)
 
 # Read CONFIG to verify that we changed it
-#val = bus.read_i2c_block_data(i2c_address, reg_conv, 10)
-for i in range(0, 1000):
-	val = bus.read_i2c_block_data(i2c_address, 0, 16)
+val = bus.read_i2c_block_data(i2c_address, 0, 16)
+
+for i in range(0, 10):
+	#val = bus.read_i2c_block_data(i2c_address, 0, 16)
 	#print("msg:", val[0], ", ", val[1])
 	#print(i, val[0]*16 + val[1])
 	print(i, end=": ")
-	#sleep(0.03)
-	for j in range(0, 2):
-		print(val[j], end=', ')
-	print("sum: ", val[0]*16 + val[1])
+	sleep(0.03)
+	print("sum: ", val[0]*16 + val[1], end=": ")
+	print(val)
