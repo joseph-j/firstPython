@@ -24,11 +24,11 @@ bus = SMBus(i2c_ch)
 val = [0] * 3
 
 # Send write bit
-for j in range(0,6):
-	print("command = ", j)
+for j in range(0,1000):
+	print("command = ", j, end=": ")
 	bus.write_byte_data(i2c_address, reg_config, j)
-	for i in range(0,6):
-		print(i, end=": ")
+	for i in range(1,2):
+		#print(i, end=": ")
 		print(bus.read_i2c_block_data(i2c_address, i, 3))
 #bus.write_i2c_block_data(i2c_address, 0, config_block)
 #bus.write_byte_data(i2c_address, 0, config_byte2)
