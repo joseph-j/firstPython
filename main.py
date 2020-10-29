@@ -1,5 +1,3 @@
-
-
 from time import sleep
 from smbus2 import SMBus
 
@@ -15,26 +13,30 @@ reg_config = 0x01
 #config msg
 config_byte1 = 0
 config_byte2 = 224
-config_block = [0x00, 0x00, 0xE0]
+config_block = [0x00, 0xE0]
+
 # Initialize I2C (SMBus)
 #bus = smbus.SMBus(i2c_ch)
 bus = SMBus(i2c_ch)
 
+#writes and confirms  configs
+bus.write_i2c_block_data(i2c_address, reg_config, config_block)
+print(bus.read_i2c_block_data(i2c_address, reg_config, 2))
+
 # Initialize msg list
-val = [0] * 3
+#val = [0] * 3
 
 # Send write bit
-for j in range(0,6):
-	print("command = ", j)
-	bus.write_byte_data(i2c_address, reg_config, j)
-	for i in range(0,6):
-		print(i, end=": ")
-		print(bus.read_i2c_block_data(i2c_address, i, 3))
-#bus.write_i2c_block_data(i2c_address, 0, config_block)
+for j in range(0,1000):
+	print(j, end=": ")
+	#bus.write_byte_data(i2c_address, reg_conv, j)
+	#print(bus.read_byte_data(i2c_address, reg_conv))
+	print(bus.read_i2c_block_data(i2c_address, 0, 2))
+	sleep(0.01)
+#for i in range(1,2):
+		#print(i, end=": ")
+		#print(bus.read_i2c_block_data(i2c_address, i, 2))
 #bus.write_byte_data(i2c_address, 0, config_byte2)
-
-# Read CONFIG to verify that we changed it
-#val = bus.read_i2c_block_data(i2c_address, 0, 16)
 
 #for i in range(0, 10):
 	#val = bus.read_i2c_block_data(i2c_address, 0, 16)
