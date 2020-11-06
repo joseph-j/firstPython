@@ -19,7 +19,7 @@ threshHi_config = 0x11
 
 #config msg
 config_block = [0x00, 0xE0]
-threshHi_block = [0x3C, 0xC0]
+threshHi_block = [0x3C, 0xC0] ##[0x3C, 0xC0]
 
 # Initialize I2C (SMBus)
 bus = SMBus(i2c_ch)
@@ -46,7 +46,6 @@ def captureData(dataList):
 		if item == "#":
 			listStart = listCounter
 			break
-	print(listCounter)
 
 	j = 0
 	for i in range(listCounter, dataWindow):
@@ -56,17 +55,19 @@ def captureData(dataList):
 		shiftedList[j] = dataList[i]
 		j = j + 1
 	writeToFile(shiftedList)
+	##print(shiftedList[500])
 
 def updateDataList(j, dataList):
 	val = bus.read_i2c_block_data(i2c_address, 0, 2)
 	valSum = val[0] * 16 + val[1]
 	#valSum = j
-	if valSum > 3500:
-		valSum = valSum - 3900
-	if valSum > 1100:
-		print(valSum)
-		print(hex(valSum))
-		print(hex(val[0]), hex(val[1]))
+	if valSum > 50:
+		valSum = 0
+	if valSum > 12:
+		##print(valSum)
+		print(val)
+		triggerSwitch()
+		##print(hex(val[0]), hex(val[1]))
 	dataList[j] = valSum
 	dataList[j+1] = "#"
 	return dataList
@@ -85,28 +86,34 @@ if __name__ == '__main__':
 	GPIO.add_event_detect(interrupt_GPIO, GPIO.RISING, callback=triggerSwitch, bouncetime=100)
 	#writes and confirms  configs
 	bus.write_i2c_block_data(i2c_address, reg_config, config_block)
-	print(bus.read_i2c_block_data(i2c_address, reg_config, 2))
+	print(bus.read_i2c_block_data(i2c_address, reg_config, 16))
 
 	#writes and confirms threshold high values
 	bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
 	print(bus.read_i2c_block_data(i2c_address, threshHi_config, 16))
 
 	dataList = [0] * (dataWindow + 1)
-	randStop = random.randrange(500)
+	k = 190
+	while not thresholdTrigger:
+		k = k + 1
+		threshHi_block = [62, 192]
 
+		bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
+		##print(bus.read_i2c_block_data(i2c_address, threshHi_config, 2))
+		dataListMax = 0
+		for i in range(50, 100):
+			if dataList[i] > dataListMax:
+				dataListMax = dataList[i]
+		#dataListAvg = dataListAvg / 50
+		print(dataListMax)
 
-	#for j in range(0,dataWindow-1):
-	#	dataList = updateDataList(j, dataList)
-	#for j in range(0,randStop):
-	#	dataList = updateDataList(j, dataList)
-
-	for j in range(0, dataWindow):
-		dataList = updateDataList(j, dataList)
-		if thresholdTrigger:
-			j = dataWindow
-	for j in range(0, 500):
-		dataList = updateDataList(j, dataList)
-	captureData(dataList)
+		for j in range(0, dataWindow):
+			dataList = updateDataList(j, dataList)
+			if thresholdTrigger:
+				j = dataWindow
+		for j in range(0, 500):
+			dataList = updateDataList(j, dataList)
+		captureData(dataList)
 
 
 	bus.close()
