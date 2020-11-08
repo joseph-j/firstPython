@@ -59,17 +59,18 @@ def captureData(dataList):
 
 def updateDataList(j, dataList):
 	val = bus.read_i2c_block_data(i2c_address, 0, 2)
-	valSum = val[0] * 16 + val[1]
+	valSum = (val[0]) * 16 + val[1]
 	#valSum = j
-	if valSum > 50:
-		valSum = 0
-	if valSum > 12:
+	if valSum > 1000:
+		valSum = 4335 - valSum
+	if valSum > 10:
 		##print(valSum)
 		print(val)
 		triggerSwitch()
-		##print(hex(val[0]), hex(val[1]))
+		##prinxt(hex(val[0]), hex(val[1]))
 	dataList[j] = valSum
 	dataList[j+1] = "#"
+	#print(valSum)
 	return dataList
 
 def writeToFile(dataList):
@@ -93,20 +94,21 @@ if __name__ == '__main__':
 	print(bus.read_i2c_block_data(i2c_address, threshHi_config, 16))
 
 	dataList = [0] * (dataWindow + 1)
+	maxList = [0] * 990
 	k = 190
-	while not thresholdTrigger:
+	for l in range(0, 300):
+	##while not thresholdTrigger:
 		k = k + 1
 		threshHi_block = [62, 192]
 
 		bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
 		##print(bus.read_i2c_block_data(i2c_address, threshHi_config, 2))
-		dataListMax = 0
-		for i in range(50, 100):
-			if dataList[i] > dataListMax:
-				dataListMax = dataList[i]
+		dataListSum = 0
+		for i in range(10, 400):
+			dataListSum = dataListSum + dataList[i]
 		#dataListAvg = dataListAvg / 50
-		print(dataListMax)
-
+		print(dataListSum)
+		maxList[l] = dataListSum
 		for j in range(0, dataWindow):
 			dataList = updateDataList(j, dataList)
 			if thresholdTrigger:
@@ -115,5 +117,5 @@ if __name__ == '__main__':
 			dataList = updateDataList(j, dataList)
 		captureData(dataList)
 
-
+	##writeToFile(maxList)
 	bus.close()
