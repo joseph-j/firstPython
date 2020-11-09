@@ -1,3 +1,4 @@
+
 from time import sleep
 from smbus2 import SMBus
 import RPi.GPIO as GPIO
@@ -39,6 +40,7 @@ def signal_handler(sig, frame):
 	sys.exit(0)
 
 def captureData(dataList):
+	fileCounter = dataList[0]
 	listCounter = 0
 	shiftedList = [0]*dataWindow
 	for item in dataList:
@@ -54,7 +56,7 @@ def captureData(dataList):
 	for i in range(0, listCounter):
 		shiftedList[j] = dataList[i]
 		j = j + 1
-	writeToFile(shiftedList)
+	writeToFile(shiftedList, fileCounter)
 	##print(shiftedList[500])
 
 def updateDataList(j, dataList):
@@ -73,9 +75,9 @@ def updateDataList(j, dataList):
 	#print(valSum)
 	return dataList
 
-def writeToFile(dataList):
+def writeToFile(dataList, fileCounter):
 	#write to datafile
-	f = open('datafile.csv', 'w')
+	f = open('datafile' + str(fileCounter) + '.csv', 'w')
 	for item in dataList:
 		f.write("%s\n" % item)
 	f.close()
@@ -99,27 +101,29 @@ if __name__ == '__main__':
 	maxList = [0] * 990
 	halfWindow = int(dataWindow / 2)
 	l = 0
-	#for l in range(0, 300):
-	while not thresholdTrigger:
-		l = l + 1
-		threshHi_block = [62, 192]
+	threshHi_block = [62, 192]
+	bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
+	for l in range(0, 10):
+		while not thresholdTrigger:
+			#threshHi_block = [62, 192]
 
-		bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
-		##print(bus.read_i2c_block_data(i2c_address, threshHi_config, 2))
-		dataListSum = 0
-		for i in range(10, 400):
-			dataListSum = dataListSum + dataList[i]
-		print(dataListSum)
-		maxList[l] = dataListSum
-		for j in range(1, dataWindow):
-			dataList = updateDataList(j, dataList)
-			if dataList[0]:
-				j = dataWindow
-		for j in range(1, halfWindow):
-			dataList = updateDataList(j, dataList)
+			#bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
+			dataListSum = 0
+			for i in range(10, 400):
+				dataListSum = dataListSum + dataList[i]
+			print(dataListSum)
+			maxList[l] = dataListSum
+			for j in range(1, dataWindow):
+				dataList = updateDataList(j, dataList)
+				if dataList[0]:
+					j = dataWindow
+			for j in range(1, halfWindow):
+				dataList = updateDataList(j, dataList)
 
-		thresholdTrigger = dataList[0]
-		##print(thresholdTrigger)
-	##writeToFile(maxList)
-	captureData(dataList)
+			thresholdTrigger = dataList[0]
+			##print(thresholdTrigger)
+		##writeToFile(maxList)
+		dataList[0] = l
+		captureData(dataList)
+		sleep(3)
 	bus.close()
