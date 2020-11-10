@@ -94,12 +94,12 @@ if __name__ == '__main__':
 
 	dataList = [0] * (dataWindow + 1)
 	dataList[0] = False
-	thesholdTrigger = dataList[0]
+	thresholdTrigger = dataList[0]
 	halfWindow = int(dataWindow / 2)
 	threshHi_block = [62, 192]
 	bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
-	for l in range(0, 2):
-		threholdTrigger = False
+	for l in range(0, 10):
+		thresholdTrigger = False
 		while not thresholdTrigger:
 			dataListSum = 0
 			for i in range(10, 400):
