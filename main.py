@@ -103,11 +103,9 @@ if __name__ == '__main__':
 	l = 0
 	threshHi_block = [62, 192]
 	bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
-	for l in range(0, 10):
+	for l in range(0, 1):
+		threholdTrigger = False
 		while not thresholdTrigger:
-			#threshHi_block = [62, 192]
-
-			#bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
 			dataListSum = 0
 			for i in range(10, 400):
 				dataListSum = dataListSum + dataList[i]
