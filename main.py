@@ -108,12 +108,10 @@ if __name__ == '__main__':
 			for j in range(1, dataWindow):
 				dataList = updateDataList(j, dataList)
 				if dataList[0]:
+					for j in range(1, halfWindow):
+						dataList = updateDataList(j, dataList)
 					j = dataWindow + 1
-			for j in range(1, halfWindow):
-				dataList = updateDataList(j, dataList)
 			thresholdTrigger = dataList[0]
-			##print(thresholdTrigger)
-		##writeToFile(maxList)
 		dataList[0] = l
 		captureData(dataList)
 		time.sleep(3)
