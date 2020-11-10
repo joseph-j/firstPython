@@ -48,7 +48,6 @@ def captureData(dataList):
 		if item == "#":
 			listStart = listCounter
 			break
-
 	j = 0
 	for i in range(listCounter, dataWindow):
 		shiftedList[j] = dataList[i]
@@ -57,7 +56,6 @@ def captureData(dataList):
 		shiftedList[j] = dataList[i]
 		j = j + 1
 	writeToFile(shiftedList, fileCounter)
-	##print(shiftedList[500])
 
 def updateDataList(j, dataList):
 	val = bus.read_i2c_block_data(i2c_address, 0, 2)
@@ -98,26 +96,22 @@ if __name__ == '__main__':
 	dataList = [0] * (dataWindow + 1)
 	dataList[0] = False
 	thesholdTrigger = dataList[0]
-	maxList = [0] * 990
 	halfWindow = int(dataWindow / 2)
-	l = 0
 	threshHi_block = [62, 192]
 	bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
-	for l in range(0, 1):
+	for l in range(0, 2):
 		threholdTrigger = False
 		while not thresholdTrigger:
 			dataListSum = 0
 			for i in range(10, 400):
 				dataListSum = dataListSum + dataList[i]
 			print(dataListSum)
-			maxList[l] = dataListSum
 			for j in range(1, dataWindow):
 				dataList = updateDataList(j, dataList)
 				if dataList[0]:
-					j = dataWindow
+					j = dataWindow + 1
 			for j in range(1, halfWindow):
 				dataList = updateDataList(j, dataList)
-
 			thresholdTrigger = dataList[0]
 			##print(thresholdTrigger)
 		##writeToFile(maxList)
