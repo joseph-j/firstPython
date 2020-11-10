@@ -1,5 +1,4 @@
-
-from time import sleep
+import time
 from smbus2 import SMBus
 import RPi.GPIO as GPIO
 import signal
@@ -117,5 +116,5 @@ if __name__ == '__main__':
 		##writeToFile(maxList)
 		dataList[0] = l
 		captureData(dataList)
-		sleep(3)
+		time.sleep(3)
 	bus.close()
