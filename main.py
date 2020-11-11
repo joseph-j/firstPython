@@ -62,9 +62,10 @@ def updateDataList(j, dataList):
 	#valSum = j
 	if valSum > 1000:
 		valSum = 4335 - valSum
-	if valSum > 15:
+	if valSum > 10:
 		##print(valSum)
 		print(val)
+		valSum = 100
 		##triggerSwitch()
 		dataList[0] = True
 	dataList[j] = valSum
@@ -95,22 +96,24 @@ if __name__ == '__main__':
 	dataList = [0] * (dataWindow + 1)
 	dataList[0] = False
 	thresholdTrigger = dataList[0]
-	halfWindow = int(dataWindow / 2)
+	halfWindow = int(dataWindow / 4)
 	threshHi_block = [62, 192]
 	bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
 	for l in range(0, 10):
 		thresholdTrigger = False
 		while not thresholdTrigger:
 			dataListSum = 0
-			for i in range(10, 400):
-				dataListSum = dataListSum + dataList[i]
-			print(dataListSum)
+			#for i in range(400, 800):
+				#dataListSum = dataListSum + dataList[i]
+			#print(dataListSum)
+			print(l)
 			for j in range(1, dataWindow):
 				dataList = updateDataList(j, dataList)
 				if dataList[0]:
 					for j in range(1, halfWindow):
 						dataList = updateDataList(j, dataList)
 					j = dataWindow + 1
+					break
 			thresholdTrigger = dataList[0]
 		dataList[0] = l
 		captureData(dataList)
