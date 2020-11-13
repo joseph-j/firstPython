@@ -57,20 +57,25 @@ def captureData(dataList):
 	writeToFile(shiftedList, fileCounter)
 
 def updateDataList(j, dataList):
-	val = bus.read_i2c_block_data(i2c_address, 0, 2)
+	addressDictionary = [0, 4]
+	val2 = [0] * 2
+	val = bus.read_i2c_block_data(i2c_address, i, 2)
 	valSum = (val[0]) * 16 + val[1]
-	#valSum = j
 	if valSum > 1000:
 		valSum = 4335 - valSum
-	if valSum > 10:
-		##print(valSum)
-		print(val)
+	val2[0] = valSum
+	if valSum > 15:
+		print (valSum)
 		valSum = 100
-		##triggerSwitch()
 		dataList[0] = True
-	dataList[j] = valSum
+	val = bus.read_i2c_block_data(i2c_address, i, 2)
+	valSum = (val[0]) * 16 + val[1]
+	if valSum > 1000:
+		valSum = 4335 - valSum
+	val2[1] = valSum
+
+	dataList[j] = val2
 	dataList[j+1] = "#"
-	#print(valSum)
 	return dataList
 
 def writeToFile(dataList, fileCounter):
@@ -99,14 +104,17 @@ if __name__ == '__main__':
 	halfWindow = int(dataWindow / 4)
 	threshHi_block = [62, 192]
 	bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
-	for i in range(0, 10):
+	bus.write_i2c_block_data(i2c_address, 0, [0,0])
+
+	for i in range(0, 5):
 		thresholdTrigger = False
 		while not thresholdTrigger:
 			dataListSum = 0
-			#for k in range(400, 800):
-				#dataListSum = dataListSum + dataList[k]
+			for k in range(400, 800):
+				if isinstance(dataList[k], int):
+					dataListSum = dataListSum + dataList[k]
 			#print(dataListSum)
-			print(i)
+			#print(i)
 			for j in range(1, dataWindow):
 				dataList = updateDataList(j, dataList)
 				if dataList[0]:
