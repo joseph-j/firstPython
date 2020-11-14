@@ -109,12 +109,6 @@ if __name__ == '__main__':
 	for i in range(0, 5):
 		thresholdTrigger = False
 		while not thresholdTrigger:
-			dataListSum = 0
-			for k in range(10, 400):
-				if isinstance(dataList[k], int):
-					dataListSum = dataListSum + dataList[k]
-			#print(dataListSum)
-			#print(i)
 			for j in range(1, dataWindow):
 				dataList = updateDataList(j, dataList)
 				##if dataList[0]:
@@ -122,6 +116,11 @@ if __name__ == '__main__':
 				##		dataList = updateDataList(h, dataList)
 				##	j = dataWindow + 1
 				##	break
+			dataListSum = 0
+			for k in range(10, 400):
+				if isinstance(dataList[k], int):
+					dataListSum = dataListSum + dataList[k]
+			print(dataListSum)
 			thresholdTrigger = dataList[0]
 		dataList[0] = i
 		captureData(dataList)
