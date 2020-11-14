@@ -51,13 +51,12 @@ def captureData(dataList):
 	for i in range(listStart, dataWindow):
 		shiftedList[j] = dataList[i]
 		j = j + 1
-	for i in range(0, listStart):
+	for i in range(0, (listStart - 1)):
 		shiftedList[j] = dataList[i]
 		j = j + 1
 	writeToFile(shiftedList, fileCounter)
 
 def updateDataList(j, dataList):
-	addressDictionary = [0, 4]
 	val2 = [0] * 2
 	val = bus.read_i2c_block_data(i2c_address, i, 2)
 	valSum = (val[0]) * 16 + val[1]
@@ -81,6 +80,7 @@ def updateDataList(j, dataList):
 def writeToFile(dataList, fileCounter):
 	#write to datafile
 	f = open('datafile' + str(fileCounter) + '.csv', 'w')
+	print('wrote: datafile' + str(fileCounter) + '.csv')
 	for item in dataList:
 		f.write("%s\n" % item)
 	f.close()
@@ -110,18 +110,18 @@ if __name__ == '__main__':
 		thresholdTrigger = False
 		while not thresholdTrigger:
 			dataListSum = 0
-			for k in range(400, 800):
+			for k in range(10, 400):
 				if isinstance(dataList[k], int):
 					dataListSum = dataListSum + dataList[k]
 			#print(dataListSum)
 			#print(i)
 			for j in range(1, dataWindow):
 				dataList = updateDataList(j, dataList)
-				if dataList[0]:
-					for h in range(1, halfWindow):
-						dataList = updateDataList(h, dataList)
-					j = dataWindow + 1
-					break
+				##if dataList[0]:
+				##	for h in range(1, halfWindow):
+				##		dataList = updateDataList(h, dataList)
+				##	j = dataWindow + 1
+				##	break
 			thresholdTrigger = dataList[0]
 		dataList[0] = i
 		captureData(dataList)
