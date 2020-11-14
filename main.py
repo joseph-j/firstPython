@@ -117,10 +117,17 @@ if __name__ == '__main__':
 				##	j = dataWindow + 1
 				##	break
 			dataListSum = 0
+			dataListSum2 = 0
 			for k in range(10, 400):
-				if isinstance(dataList[k], int):
-					dataListSum = dataListSum + dataList[k]
-			print(dataListSum)
+				#print (dataList[k])
+				#print (dataList[k][0])
+				dataListNext = dataList[k][0]
+				if isinstance(dataListNext, int):
+					dataListSum = dataListSum + dataListNext
+				dataListNext = dataList[k][1]
+				if isinstance(dataListNext, int):
+					dataListSum2 = dataListSum2 + dataListNext
+			print (dataListSum, ", ", dataListSum2)
 			thresholdTrigger = dataList[0]
 		dataList[0] = i
 		captureData(dataList)
