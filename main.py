@@ -101,27 +101,27 @@ if __name__ == '__main__':
 	dataList = [0] * (dataWindow + 1)
 	dataList[0] = False
 	thresholdTrigger = dataList[0]
-	halfWindow = int(dataWindow / 4)
+	halfWindow = int(dataWindow / 2)
 	threshHi_block = [62, 192]
 	bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
 	bus.write_i2c_block_data(i2c_address, 0, [0,0])
 
-	for i in range(0, 2):
+	for i in range(0, 4):
 		thresholdTrigger = False
 		dataList[0] = thresholdTrigger
 		while not thresholdTrigger:
 			for j in range(1, dataWindow):
 				dataList = updateDataList(j, dataList)
 				if dataList[0]:
-				##	for h in range(1, halfWindow):
-				##		dataList = updateDataList(h, dataList)
+					for h in range(1, halfWindow):
+						dataList = updateDataList(h, dataList)
 					j = dataWindow + 1
 					break
 			dataListSum = 0
 			dataListSum2 = 0
 			for k in range(10, 400):
 				#print (dataList[k])
-				#print (dataList[k][0])
+				#print (dataList[k][1])
 				dataListNext = dataList[k][0]
 				if isinstance(dataListNext, int):
 					dataListSum = dataListSum + dataListNext
@@ -132,5 +132,6 @@ if __name__ == '__main__':
 			thresholdTrigger = dataList[0]
 		dataList[0] = i
 		captureData(dataList)
+		dataList = [0] * (dataWindow + 1)
 		time.sleep(3)
 	bus.close()
