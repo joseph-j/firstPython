@@ -58,16 +58,16 @@ def captureData(dataList):
 
 def updateDataList(j, dataList):
 	val2 = [0] * 2
-	val = bus.read_i2c_block_data(i2c_address, i, 2)
+	val = bus.read_i2c_block_data(i2c_address, 0, 2)
 	valSum = (val[0]) * 16 + val[1]
 	if valSum > 1000:
 		valSum = 4335 - valSum
 	val2[0] = valSum
 	if valSum > 15:
 		print (valSum)
-		valSum = 100
+		#valSum = 100
 		dataList[0] = True
-	val = bus.read_i2c_block_data(i2c_address, i, 2)
+	val = bus.read_i2c_block_data(i2c_address, 4, 2)
 	valSum = (val[0]) * 16 + val[1]
 	if valSum > 1000:
 		valSum = 4335 - valSum
@@ -106,16 +106,17 @@ if __name__ == '__main__':
 	bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
 	bus.write_i2c_block_data(i2c_address, 0, [0,0])
 
-	for i in range(0, 5):
+	for i in range(0, 2):
 		thresholdTrigger = False
+		dataList[0] = thresholdTrigger
 		while not thresholdTrigger:
 			for j in range(1, dataWindow):
 				dataList = updateDataList(j, dataList)
-				##if dataList[0]:
+				if dataList[0]:
 				##	for h in range(1, halfWindow):
 				##		dataList = updateDataList(h, dataList)
-				##	j = dataWindow + 1
-				##	break
+					j = dataWindow + 1
+					break
 			dataListSum = 0
 			dataListSum2 = 0
 			for k in range(10, 400):
