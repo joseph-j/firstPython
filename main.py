@@ -41,6 +41,7 @@ def signal_handler(sig, frame):
 def captureData(dataList):
 	fileCounter = dataList[0]
 	listCounter = 0
+	dataWindow = len(dataList)
 	shiftedList = [0]*dataWindow
 	for item in dataList:
 		listCounter = listCounter + 1
@@ -51,9 +52,12 @@ def captureData(dataList):
 	for i in range(listStart, dataWindow):
 		shiftedList[j] = dataList[i]
 		j = j + 1
+	##print (shiftedList)
+	##print (j)
 	for i in range(0, (listStart - 1)):
 		shiftedList[j] = dataList[i]
 		j = j + 1
+	##print (shiftedList)
 	writeToFile(shiftedList, fileCounter)
 
 def updateDataList(j, dataList):
@@ -63,8 +67,8 @@ def updateDataList(j, dataList):
 	if valSum > 1000:
 		valSum = 4335 - valSum
 	val2[0] = valSum
-	if valSum > 15:
-		print (valSum)
+	if valSum > 64:
+		#print (valSum)
 		#valSum = 100
 		dataList[0] = True
 	val = bus.read_i2c_block_data(i2c_address, 4, 2)
@@ -106,7 +110,7 @@ if __name__ == '__main__':
 	bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
 	bus.write_i2c_block_data(i2c_address, 0, [0,0])
 
-	for i in range(0, 4):
+	for i in range(0, 1):
 		thresholdTrigger = False
 		dataList[0] = thresholdTrigger
 		while not thresholdTrigger:
@@ -117,11 +121,12 @@ if __name__ == '__main__':
 						dataList = updateDataList(h, dataList)
 					j = dataWindow + 1
 					break
+			##print (dataList)
 			dataListSum = 0
 			dataListSum2 = 0
 			for k in range(10, 400):
-				#print (dataList[k])
-				#print (dataList[k][1])
+				##print (dataList[k])
+				##print (dataList[k][1])
 				dataListNext = dataList[k][0]
 				if isinstance(dataListNext, int):
 					dataListSum = dataListSum + dataListNext
