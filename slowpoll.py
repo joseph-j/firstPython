@@ -68,10 +68,6 @@ def updateDataList(j, dataList):
 	if valSum > 1000:
 		valSum = 4335 - valSum
 	val2[0] = valSum
-	if valSum > 64:
-		#print (valSum)
-		#valSum = 100
-		dataList[0] = True
 	val = bus.read_i2c_block_data(i2c_address, 4, 2)
 	valSum = (val[0]) * 16 + val[1]
 	if valSum > 1000:
