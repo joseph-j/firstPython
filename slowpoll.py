@@ -107,5 +107,5 @@ if __name__ == '__main__':
         # captureData(dataList)
         dataList = [0] * (dataWindow + 1)
         #time.sleep(1)
-    writeToFile(dataSum, 2)
+    writeToFile(dataSum, 3)
     bus.close()
