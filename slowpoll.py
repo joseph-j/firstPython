@@ -80,7 +80,7 @@ def updateDataList(j, dataList):
 
 def writeToFile(dataList, fileCounter):
 	#write to datafile
-	f = open('datafile' + str(fileCounter) + '.csv', 'w')
+	f = open('slowPoll' + str(fileCounter) + '.csv', 'w')
 	print('wrote: datafile' + str(fileCounter) + '.csv')
 	for item in dataList:
 		f.write("%s\n" % item)
@@ -108,36 +108,32 @@ if __name__ == '__main__':
 	bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
 	bus.write_i2c_block_data(i2c_address, 0, [0,0])
 
-	for i in range(0, 9):
-		thresholdTrigger = False
-		dataList[0] = thresholdTrigger
-		while not thresholdTrigger:
-			for j in range(1, dataWindow):
-				dataList = updateDataList(j, dataList)
-				if dataList[0]:
-					for h in range(1, halfWindow):
-						dataList = updateDataList(h, dataList)
-					j = dataWindow + 1
-					break
-			##print (dataList)
-			dataListSum = 0
-			dataListSum2 = 0
-			for k in range(10, 400):
-				##print (dataList[k])
-				##print (dataList[k][1])
-				dataListNext = dataList[k][0]
-				if isinstance(dataListNext, int):
-					dataListSum = dataListSum + dataListNext
-				dataListNext = dataList[k][1]
-				if isinstance(dataListNext, int):
-					dataListSum2 = dataListSum2 + dataListNext
-			print (dataListSum, ", ", dataListSum2)
-			dataSum[n] = dataListSum
-			n = n + 1
-			thresholdTrigger = dataList[0]
+	for i in range(0, 2400):
+		for j in range(1, dataWindow):
+			dataList = updateDataList(j, dataList)
+			if dataList[0]:
+				for h in range(1, halfWindow):
+					dataList = updateDataList(h, dataList)
+				j = dataWindow + 1
+				break
+		##print (dataList)
+		dataListSum = 0
+		dataListSum2 = 0
+		for k in range(10, 400):
+			##print (dataList[k])
+			##print (dataList[k][1])
+			dataListNext = dataList[k][0]
+			if isinstance(dataListNext, int):
+				dataListSum = dataListSum + dataListNext
+			dataListNext = dataList[k][1]
+			if isinstance(dataListNext, int):
+				dataListSum2 = dataListSum2 + dataListNext
+		print (dataListSum, ", ", dataListSum2)
+		dataSum[n] = dataListSum
+		n = n + 1
 		dataList[0] = i
 		captureData(dataList)
 		dataList = [0] * (dataWindow + 1)
 		time.sleep(1)
-	writeToFile(dataSum, 69)
+	writeToFile(dataSum, 1)
 	bus.close()
