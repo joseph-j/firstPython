@@ -43,6 +43,7 @@ def captureData(dataList):
 	listCounter = 0
 	dataWindow = len(dataList)
 	shiftedList = [0]*dataWindow
+	listStart = 0
 	for item in dataList:
 		listCounter = listCounter + 1
 		if item == "#":
@@ -101,7 +102,8 @@ if __name__ == '__main__':
 	#writes and confirms threshold high values
 	bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
 	print(bus.read_i2c_block_data(i2c_address, threshHi_config, 16))
-
+	n = 0
+	dataSum = [0] * 10000
 	dataList = [0] * (dataWindow + 1)
 	dataList[0] = False
 	thresholdTrigger = dataList[0]
@@ -110,7 +112,7 @@ if __name__ == '__main__':
 	bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
 	bus.write_i2c_block_data(i2c_address, 0, [0,0])
 
-	for i in range(0, 1):
+	for i in range(0, 9):
 		thresholdTrigger = False
 		dataList[0] = thresholdTrigger
 		while not thresholdTrigger:
@@ -134,9 +136,12 @@ if __name__ == '__main__':
 				if isinstance(dataListNext, int):
 					dataListSum2 = dataListSum2 + dataListNext
 			print (dataListSum, ", ", dataListSum2)
+			dataSum[n] = dataListSum
+			n = n + 1
 			thresholdTrigger = dataList[0]
 		dataList[0] = i
 		captureData(dataList)
 		dataList = [0] * (dataWindow + 1)
-		time.sleep(3)
+		time.sleep(1)
+	writeToFile(dataSum, 69)
 	bus.close()
