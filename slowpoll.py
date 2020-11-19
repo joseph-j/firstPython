@@ -92,20 +92,20 @@ if __name__ == '__main__':
     threshHi_block = [62, 192]
     bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
     bus.write_i2c_block_data(i2c_address, 0, [0, 0])
-
-    for i in range(0, 500):
-        for j in range(1, dataWindow):
-            dataList = updateDataList(j, dataList)
-        dataListSum = 0
-        for k in range(1, 500):
-            dataListNext = dataList[k]
-            if isinstance(dataListNext, int):
-                dataListSum = dataListSum + dataListNext
-        print(dataListSum)
-        dataSum[i] = dataListSum
-        # dataList[0] = i
-        # captureData(dataList)
-        dataList = [0] * (dataWindow + 1)
-        #time.sleep(1)
-    writeToFile(dataSum, 3)
+	for n in range (0, 20):
+		for i in range(0, 500):
+			for j in range(1, dataWindow):
+				dataList = updateDataList(j, dataList)
+			dataListSum = 0
+			for k in range(1, 500):
+				dataListNext = dataList[k]
+				if isinstance(dataListNext, int):
+					dataListSum = dataListSum + dataListNext
+			print(dataListSum)
+			dataSum[i] = dataListSum
+			# dataList[0] = i
+			# captureData(dataList)
+			dataList = [0] * (dataWindow + 1)
+			#time.sleep(1)
+		writeToFile(dataSum, n)
     bus.close()
