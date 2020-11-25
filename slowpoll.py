@@ -8,7 +8,7 @@ import random
 i2c_ch = 1
 interrupt_GPIO = 7
 
-# ADC address on the I2C bus
+# ADC address on the I2C_ bus
 i2c_address = 0x48
 
 # Register addresses
@@ -43,6 +43,7 @@ def captureData(dataList):
 	listStart = 0
 	for item in dataList:
 		listCounter = listCounter + 1
+		#print (listCounter, " ", dataList[listCounter])
 		if item == "#":
 			listStart = listCounter
 			break
@@ -53,6 +54,8 @@ def captureData(dataList):
 	for i in range(0, (listStart - 1)):
 		shiftedList[j] = dataList[i]
 		j = j + 1
+	#print (shiftedList)
+	print (listStart)
 	writeToFile(shiftedList, fileCounter)
 
 
@@ -61,6 +64,8 @@ def updateDataList(j, dataList):
 	valSum = (val[0]) * 16 + val[1]
 	if valSum > 1000:
 		valSum = 4335 - valSum
+	if valSum > 70:
+		dataList[0] =  True
 	dataList[j] = valSum
 	dataList[j + 1] = "#"
 	return dataList
@@ -89,13 +94,24 @@ if __name__ == '__main__':
 	print(bus.read_i2c_block_data(i2c_address, threshHi_config, 16))
 	dataSum = [0] * 1000
 	dataList = [0] * (dataWindow + 1)
+	writeCounter = 60
 	threshHi_block = [62, 192]
 	bus.write_i2c_block_data(i2c_address, threshHi_config, threshHi_block)
 	bus.write_i2c_block_data(i2c_address, 0, [0, 0])
+	dataList[0] = False
 	for n in range (0, 20):
 		for i in range(0, 500):
 			for j in range(1, dataWindow):
 				dataList = updateDataList(j, dataList)
+				if dataList[0]:
+					print("triggered")
+					for j in range(1, 900):
+						dataList = updateDataList(j, dataList)
+					writeToFile(dataList, writeCounter)
+					writeCounter = writeCounter + 1
+					j = dataWindow + 1
+					dataList[0] = False
+					break
 			dataListSum = 0
 			for k in range(1, 500):
 				dataListNext = dataList[k]
